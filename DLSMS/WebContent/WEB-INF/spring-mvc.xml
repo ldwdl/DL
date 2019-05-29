@@ -1,0 +1,44 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/cache
+        http://www.springframework.org/schema/cache/spring-cache-4.2.xsd
+		">
+	
+
+	<!-- 扫描Controller层 -->
+    <context:component-scan base-package="cn.sie.dl.controller" />
+
+	<!-- 定义jsp位置-->
+   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 支持上传文件 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+
+    <mvc:annotation-driven>
+     <!--消息转换器： 处理@ResponseBody中文乱码问题 注意使用位置必须在<mvc:annotation-driven />之前-->
+	    <mvc:message-converters register-defaults="true">
+	         <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+	                <property name="supportedMediaTypes" value="text/html;charset=utf-8"/>
+	         </bean>
+	    </mvc:message-converters>
+	</mvc:annotation-driven>	
+				
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>					
+						
+						
+</beans>
+	

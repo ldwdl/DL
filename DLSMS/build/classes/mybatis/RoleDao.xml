@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sie.dl.dao.RoleDao">
+    <!-- 开启mybatis的二级缓存-->
+    <!--<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
+    -->
+    <resultMap type="cn.sie.dl.entity.Role" id="RoleResultMap">
+    	<result property="roleId" column="role_id"/>
+    	<result property="roleName" column="role_name"/>
+    	<result property="roleRemark" column="role_remark"/>
+    
+    </resultMap>
+    
+    <delete id="upDelRole" parameterType="Integer">
+
+    	delete from userrole ur where ur.role_id = #{0} and ur.user_id = #{1}
+    
+    </delete>
+    
+   <insert id="upAddRole" parameterType="Integer"> 
+   	  
+       INSERT 
+        INTO userrole(userroleid,user_id,role_id)
+          VALUES (
+                SEQ_userrole.Nextval,
+                #{1},
+                #{0}
+                
+          )
+    </insert>
+   
+   <select id="userGetRole" parameterType="Integer" resultMap="RoleResultMap">
+   			select * from(
+   				select ur.role_id from  userinfo u,userrole ur  where u.id=ur.user_id and ur.user_id = #{userId})ur,role r 
+   			where r.role_id = ur.role_id
+   </select> 
+    
+   <select id="roleFindAll" resultMap="RoleResultMap">
+                    select * from role ORDER BY role_id desc
+                 
+            </select>
+   <select id="toupfindbyid" parameterType="Integer" resultMap="RoleResultMap">
+                    select * from role where role_id = #{roleId }
+                 
+            </select>
+    
+    <update id="updateByrole" parameterType="cn.sie.dl.entity.Role">
+
+    	update role r
+			<set>
+				<if test="roleName != null">
+					r.role_name = #{roleName },			
+				</if>
+				<if test="roleRemark != null">
+					r.role_remark = #{roleRemark }			
+				</if>
+				
+			</set> 
+    	where r.role_id = #{roleId }
+    </update>
+            
+            
+   <select id="findroleCont" resultType="long">
+                    select COUNT(*) from role
+                    <where>
+                			<if test="roleName != '' and roleName != null">
+                				role_name like concat(concat('%',#{roleName}),'%')
+                			</if>
+                		</where>
+            </select>
+            
+            
+            
+   <select id="findRolePage" parameterType="java.util.Map" resultMap="RoleResultMap">
+                    <!-- select r.role_id,r.role_name,r.role_remark from role r -->
+                     SELECT * FROM 
+                     (
+            			 SELECT ROWNUM WN,RN.* FROM 
+            			 (
+                 			SELECT * FROM role r
+                				<where>
+                					<if test="roleName != '' and roleName != null">
+                						r.role_name like concat(concat('%',#{roleName}),'%')
+                					</if>
+                				</where>
+                 			ORDER BY r.role_id desc
+             				)RN
+         			)WN
+       				WHERE WN &lt;= #{startPos}+#{pageSize} AND WN > #{startPos}
+                    
+            </select>
+            
+   <delete id="deleteById" parameterType="Integer">
+
+    	delete from role r where r.role_id = #{id}
+    
+    </delete>
+    
+     <insert id="save" parameterType="cn.sie.dl.entity.Role"> 
+   	  
+        INSERT 
+        INTO role(role_id,role_name,role_remark)
+	        VALUES (
+	              SEQ_role.Nextval,
+	              #{roleName},
+	              #{roleRemark}
+	        )
+    </insert>
+
+</mapper>
